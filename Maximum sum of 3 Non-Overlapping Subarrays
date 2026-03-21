@@ -1,0 +1,44 @@
+class Solution:
+    def maxSumOfThreeSubarrays(self, nums, k):
+        n = len(nums)
+        
+        # Step 1: Compute window sums
+        windowSum = [0] * (n - k + 1)
+        curr_sum = sum(nums[:k])
+        windowSum[0] = curr_sum
+        
+        for i in range(1, n - k + 1):
+            curr_sum += nums[i + k - 1] - nums[i - 1]
+            windowSum[i] = curr_sum
+
+        # Step 2: Best from left
+        left = [0] * len(windowSum)
+        best = 0
+        for i in range(len(windowSum)):
+            if windowSum[i] > windowSum[best]:
+                best = i
+            left[i] = best
+
+        # Step 3: Best from right
+        right = [0] * len(windowSum)
+        best = len(windowSum) - 1
+        for i in range(len(windowSum) - 1, -1, -1):
+            if windowSum[i] >= windowSum[best]:
+                best = i
+            right[i] = best
+
+        # Step 4: Try middle interval
+        result = [-1, -1, -1]
+        max_total = 0
+        
+        for mid in range(k, len(windowSum) - k):
+            l = left[mid - k]
+            r = right[mid + k]
+            
+            total = windowSum[l] + windowSum[mid] + windowSum[r]
+            
+            if total > max_total:
+                max_total = total
+                result = [l, mid, r]
+
+        return result
