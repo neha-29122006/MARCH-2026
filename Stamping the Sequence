@@ -1,0 +1,37 @@
+class Solution:
+    def movesToStamp(self, stamp: str, target: str):
+        n, m = len(target), len(stamp)
+        target = list(target)
+        res = []
+        visited = [False] * (n - m + 1)
+        total_replaced = 0
+
+        def can_replace(pos):
+            for i in range(m):
+                if target[pos + i] != '?' and target[pos + i] != stamp[i]:
+                    return False
+            return True
+
+        def do_replace(pos):
+            replaced = 0
+            for i in range(m):
+                if target[pos + i] != '?':
+                    target[pos + i] = '?'
+                    replaced += 1
+            return replaced
+
+        while total_replaced < n:
+            replaced_this_round = False
+            for i in range(n - m + 1):
+                if not visited[i] and can_replace(i):
+                    replaced = do_replace(i)
+                    if replaced > 0:
+                        visited[i] = True
+                        res.append(i)
+                        total_replaced += replaced
+                        replaced_this_round = True
+
+            if not replaced_this_round:
+                return []
+
+        return res[::-1]
